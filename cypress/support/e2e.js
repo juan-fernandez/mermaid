@@ -14,8 +14,19 @@
 // ***********************************************************
 
 import '@cypress/code-coverage/support';
-import '@applitools/eyes-cypress/commands';
-import '@argos-ci/cypress/support';
+
+// Visual testing (applitools/argos) is only wired up in the plugin side when
+// RUN_VISUAL_TEST === 'true' (see cypress.config.ts). Load the matching
+// browser-side commands only then; otherwise they attempt to call back into
+// plugin tasks that were never registered and crash the spec runner with
+// "Cannot read properties of undefined (reading 'failCypressAfterAllSpecs')".
+if (Cypress.env('useArgos')) {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('@applitools/eyes-cypress/commands');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('@argos-ci/cypress/support');
+}
+
 // Import commands.js using ES2015 syntax:
 import './commands';
 
